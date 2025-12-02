@@ -5,32 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeting Timer</title>
     <style>
-        :root {
-            /* Light mode (default) */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f5f5f5;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --accent-green: #4ade80;
-            --accent-red: #ef4444;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --border-color: #e5e7eb;
-        }
-
-        [data-theme="dark"] {
-            /* Dark mode */
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --text-tertiary: #6b7280;
-            --accent-green: #4ade80;
-            --accent-red: #ef4444;
-            --shadow: rgba(0, 0, 0, 0.4);
-            --border-color: #374151;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -39,368 +13,323 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: transparent;
+            color: #1a1a1a;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            transition: background 0.3s ease, color 0.3s ease;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode {
+            color: #ffffff;
         }
 
         .container {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 40px;
-            max-width: 500px;
+            background: #ffffff;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 25px 35px;
+            max-width: 600px;
             width: 100%;
-            box-shadow: 0 8px 32px var(--shadow);
-            transition: background 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, border-color 0.3s ease;
             position: relative;
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+        body.dark-mode .container {
+            background: #2a2a2a;
+            border-color: #404040;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
-        .theme-toggle:hover {
-            background: var(--bg-primary);
-            transform: scale(1.05);
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .section-name {
-            text-align: center;
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 600;
-            margin-bottom: 30px;
-            margin-top: 20px;
-            color: var(--accent-green);
+            color: #22c55e;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            padding: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: opacity 0.2s ease;
+            opacity: 0.4;
+        }
+
+        .theme-toggle:hover {
+            opacity: 1;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
         .timer-display {
-            text-align: center;
-            margin-bottom: 20px;
+            flex: 1;
         }
 
         .countdown {
-            font-size: 72px;
+            font-size: 48px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             transition: color 0.3s ease;
         }
 
         .countdown.normal {
-            color: var(--accent-green);
+            color: #22c55e;
         }
 
         .countdown.overtime {
-            color: var(--accent-red);
+            color: #ef4444;
         }
 
-        .elapsed {
-            font-size: 18px;
-            color: var(--text-secondary);
+        .time-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
             font-variant-numeric: tabular-nums;
         }
 
-        .total-elapsed {
-            font-size: 16px;
-            color: var(--text-tertiary);
-            font-variant-numeric: tabular-nums;
-            margin-top: 5px;
+        body.dark-mode .time-info {
+            color: #9ca3af;
         }
 
         .controls {
             display: flex;
-            gap: 12px;
-            margin-top: 30px;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 140px;
         }
 
-        button:not(.theme-toggle) {
-            flex: 1;
-            padding: 16px 24px;
-            font-size: 16px;
+        button {
+            padding: 10px 18px;
+            font-size: 13px;
             font-weight: 600;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .start-btn {
-            background: var(--accent-green);
-            color: #1a1a1a;
-        }
-
-        .start-btn:hover {
+        .start-pause-btn {
             background: #22c55e;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+            color: #ffffff;
         }
 
-        .pause-btn {
-            background: #fbbf24;
-            color: #1a1a1a;
-        }
-
-        .pause-btn:hover {
-            background: #f59e0b;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
-        }
-
-        .reset-btn {
-            background: var(--accent-red);
-            color: white;
-        }
-
-        .reset-btn:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        .start-pause-btn:hover {
+            background: #16a34a;
         }
 
         .next-btn {
-            background: #3b82f6;
-            color: white;
+            background: #22c55e;
+            color: #ffffff;
         }
 
         .next-btn:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            background: #16a34a;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
+        .reset-btn {
+            background: #e5e5e5;
+            color: #1a1a1a;
         }
 
-        .timers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-bottom: 30px;
+        body.dark-mode .reset-btn {
+            background: #404040;
+            color: #ffffff;
         }
 
-        .timer-option {
-            padding: 12px;
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .reset-btn:hover {
+            background: #d4d4d4;
         }
 
-        .timer-option:hover {
-            border-color: var(--accent-green);
-            transform: translateY(-2px);
+        body.dark-mode .reset-btn:hover {
+            background: #525252;
         }
 
-        .timer-option.active {
-            border-color: var(--accent-green);
-            background: rgba(74, 222, 128, 0.1);
-        }
-
-        .timer-option .name {
-            font-weight: 600;
+        .completed {
+            text-align: center;
             font-size: 16px;
-            margin-bottom: 4px;
-            color: var(--text-primary);
-        }
-
-        .timer-option .duration {
-            font-size: 14px;
-            color: var(--text-secondary);
+            color: #22c55e;
+            margin-top: 12px;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
-        
-        <h1 class="section-name" id="sectionName">Select Timer</h1>
-        
-        <div class="timers-grid" id="timersGrid"></div>
-        
-        <div class="timer-display">
-            <div class="countdown normal" id="countdown">00:00</div>
-            <div class="elapsed" id="elapsed">Elapsed: 0s</div>
-            <div class="total-elapsed" id="totalElapsed">Total: 0s</div>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div class="header">
+            <div class="section-name" id="sectionName">Rocks</div>
         </div>
-        
-        <div class="controls">
-            <button class="start-btn" id="startPauseBtn" onclick="startPauseTimer()">Start</button>
-            <button class="reset-btn" id="resetBtn" onclick="resetTimer()">Reset</button>
-            <button class="next-btn" id="nextBtn" onclick="nextSection()" disabled>Next</button>
+        <div class="main-content">
+            <div class="timer-display">
+                <div class="countdown normal" id="countdown">5:00</div>
+                <div class="time-info">
+                    <span id="elapsed">Elapsed: 0:00</span>
+                    <span id="totalElapsed">Total: 0:00</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="start-pause-btn" id="startPauseBtn">Start</button>
+                <button class="next-btn" id="nextBtn">Next</button>
+                <button class="reset-btn" id="resetBtn">Reset</button>
+            </div>
         </div>
+        <div class="completed" id="completed" style="display: none;">All Sections Complete! 🎉</div>
     </div>
 
     <script>
-        const timers = [
-            { name: 'Quick Check', duration: 300 },
-            { name: 'Status Update', duration: 900 },
-            { name: 'Team Sync', duration: 1800 },
-            { name: 'Deep Dive', duration: 2700 },
-            { name: 'Workshop', duration: 3600 }
+        const sections = [
+            { name: 'Rocks', duration: 5 * 60 },
+            { name: 'Headlines', duration: 2 * 60 },
+            { name: 'Issues', duration: 10 * 60 },
+            { name: 'Tasks', duration: 10 * 60 },
+            { name: 'Scorecard', duration: 30 * 60 }
         ];
 
         let currentSectionIndex = 0;
-        let currentTimer = null;
+        let timeRemaining = sections[0].duration;
+        let elapsedTime = 0;
         let totalElapsedTime = 0;
-        let sectionStartTime = 0;
         let timerInterval = null;
         let isRunning = false;
 
-        // Theme management
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            const toggleBtn = document.querySelector('.theme-toggle');
-            
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            toggleBtn.textContent = newTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-        }
-
-        // Load theme preference (default to light)
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            const toggleBtn = document.querySelector('.theme-toggle');
-            
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            toggleBtn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
-        }
-
-        // Initialize timers grid
-        function initializeTimers() {
-            const grid = document.getElementById('timersGrid');
-            timers.forEach((timer, index) => {
-                const option = document.createElement('div');
-                option.className = 'timer-option';
-                option.innerHTML = `
-                    <div class="name">${timer.name}</div>
-                    <div class="duration">${formatTime(timer.duration)}</div>
-                `;
-                option.onclick = () => selectTimer(index);
-                grid.appendChild(option);
-            });
-            selectTimer(0);
-        }
-
-        function selectTimer(index) {
-            currentSectionIndex = index;
-            currentTimer = timers[index];
-            document.getElementById('sectionName').textContent = currentTimer.name;
-            
-            document.querySelectorAll('.timer-option').forEach((opt, i) => {
-                opt.classList.toggle('active', i === index);
-            });
-            
-            if (!isRunning) {
-                resetTimer();
-            }
-        }
+        const sectionNameEl = document.getElementById('sectionName');
+        const countdownEl = document.getElementById('countdown');
+        const elapsedEl = document.getElementById('elapsed');
+        const totalElapsedEl = document.getElementById('totalElapsed');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const completedEl = document.getElementById('completed');
+        const themeToggle = document.getElementById('themeToggle');
 
         function formatTime(seconds) {
-            const mins = Math.floor(Math.abs(seconds) / 60);
-            const secs = Math.abs(seconds) % 60;
-            const sign = seconds < 0 ? '-' : '';
-            return `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const isNegative = seconds < 0;
+            const absSeconds = Math.abs(seconds);
+            const mins = Math.floor(absSeconds / 60);
+            const secs = absSeconds % 60;
+            const sign = isNegative ? '-' : '';
+            return `${sign}${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
         function updateDisplay() {
-            if (!currentTimer) return;
+            countdownEl.textContent = formatTime(timeRemaining);
+            elapsedEl.textContent = `Elapsed: ${formatTime(elapsedTime)}`;
+            totalElapsedEl.textContent = `Total: ${formatTime(totalElapsedTime)}`;
             
-            const currentTime = isRunning ? Date.now() : sectionStartTime;
-            const elapsed = Math.floor((currentTime - sectionStartTime) / 1000);
-            const remaining = currentTimer.duration - elapsed;
-            
-            const countdownEl = document.getElementById('countdown');
-            countdownEl.textContent = formatTime(remaining);
-            countdownEl.className = remaining >= 0 ? 'countdown normal' : 'countdown overtime';
-            
-            document.getElementById('elapsed').textContent = `Elapsed: ${elapsed}s`;
-            document.getElementById('totalElapsed').textContent = `Total: ${totalElapsedTime + elapsed}s`;
-        }
-
-        function startPauseTimer() {
-            const btn = document.getElementById('startPauseBtn');
-            
-            if (!isRunning) {
-                if (sectionStartTime === 0) {
-                    sectionStartTime = Date.now();
-                } else {
-                    const pausedDuration = Date.now() - sectionStartTime;
-                    sectionStartTime = Date.now() - pausedDuration;
-                }
-                
-                timerInterval = setInterval(updateDisplay, 100);
-                isRunning = true;
-                btn.textContent = 'Pause';
-                btn.className = 'pause-btn';
-                document.getElementById('nextBtn').disabled = false;
+            if (timeRemaining < 0) {
+                countdownEl.classList.remove('normal');
+                countdownEl.classList.add('overtime');
             } else {
-                clearInterval(timerInterval);
-                isRunning = false;
-                btn.textContent = 'Start';
-                btn.className = 'start-btn';
+                countdownEl.classList.remove('overtime');
+                countdownEl.classList.add('normal');
             }
         }
 
-        function resetTimer() {
-            clearInterval(timerInterval);
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                elapsedTime++;
+                totalElapsedTime++;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
             isRunning = false;
-            sectionStartTime = Date.now();
-            
-            const btn = document.getElementById('startPauseBtn');
-            btn.textContent = 'Start';
-            btn.className = 'start-btn';
-            document.getElementById('nextBtn').disabled = true;
-            
-            updateDisplay();
-        }
-
-        function nextSection() {
-            const elapsed = Math.floor((Date.now() - sectionStartTime) / 1000);
-            totalElapsedTime += elapsed;
-            
-            currentSectionIndex = (currentSectionIndex + 1) % timers.length;
-            selectTimer(currentSectionIndex);
-            
-            if (isRunning) {
+            if (timerInterval) {
                 clearInterval(timerInterval);
-                isRunning = false;
-                const btn = document.getElementById('startPauseBtn');
-                btn.textContent = 'Start';
-                btn.className = 'start-btn';
+                timerInterval = null;
             }
-            
-            sectionStartTime = Date.now();
+        }
+
+        function loadSection(index) {
+            if (index >= sections.length) {
+                stopTimer();
+                completedEl.style.display = 'block';
+                nextBtn.disabled = true;
+                startPauseBtn.disabled = true;
+                return;
+            }
+
+            currentSectionIndex = index;
+            const section = sections[index];
+            sectionNameEl.textContent = section.name;
+            timeRemaining = section.duration;
+            elapsedTime = 0;
             updateDisplay();
         }
 
-        // Initialize
-        loadTheme();
-        initializeTimers();
+        startPauseBtn.addEventListener('click', () => {
+            if (isRunning) {
+                stopTimer();
+                startPauseBtn.textContent = 'Start';
+            } else {
+                startTimer();
+                startPauseBtn.textContent = 'Pause';
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            stopTimer();
+            loadSection(currentSectionIndex + 1);
+            if (currentSectionIndex < sections.length) {
+                startTimer();
+                startPauseBtn.textContent = 'Pause';
+            } else {
+                startPauseBtn.textContent = 'Start';
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            stopTimer();
+            currentSectionIndex = 0;
+            totalElapsedTime = 0;
+            completedEl.style.display = 'none';
+            nextBtn.disabled = false;
+            startPauseBtn.disabled = false;
+            startPauseBtn.textContent = 'Start';
+            loadSection(0);
+        });
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.textContent = '☀️';
+            } else {
+                themeToggle.textContent = '🌙';
+            }
+        });
+
+        // Initialize display
         updateDisplay();
     </script>
 </body>
