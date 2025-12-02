@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #2a2a2a;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-name {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #4ade80;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timer-display {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 72px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .countdown.normal {
+            color: #4ade80;
+        }
+
+        .countdown.overtime {
+            color: #ef4444;
+        }
+
+        .elapsed {
+            font-size: 18px;
+            color: #9ca3af;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .total-elapsed {
+            font-size: 16px;
+            color: #6b7280;
+            font-variant-numeric: tabular-nums;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .start-pause-btn {
+            background: #4ade80;
+            color: #1a1a1a;
+        }
+
+        .start-pause-btn:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        .start-pause-btn:active {
+            transform: translateY(0);
+        }
+
+        .next-btn {
+            background: #4ade80;
+            color: #1a1a1a;
+        }
+
+        .next-btn:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        .next-btn:active {
+            transform: translateY(0);
+        }
+
+        .reset-btn {
+            background: #404040;
+            color: #ffffff;
+        }
+
+        .reset-btn:hover {
+            background: #525252;
+        }
+
+        .completed {
+            text-align: center;
+            font-size: 24px;
+            color: #4ade80;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section-name" id="sectionName">Rocks</div>
+        <div class="timer-display">
+            <div class="countdown normal" id="countdown">5:00</div>
+            <div class="elapsed" id="elapsed">Elapsed: 0:00</div>
+            <div class="total-elapsed" id="totalElapsed">Total: 0:00</div>
+        </div>
+        <div class="controls">
+            <button class="start-pause-btn" id="startPauseBtn">Start</button>
+            <button class="next-btn" id="nextBtn">Next Section</button>
+            <button class="reset-btn" id="resetBtn">Reset</button>
+        </div>
+        <div class="completed" id="completed" style="display: none;">All Sections Complete! 🎉</div>
+    </div>
+
+    <script>
+        const sections = [
+            { name: 'Rocks', duration: 5 * 60 },
+            { name: 'Headlines', duration: 2 * 60 },
+            { name: 'Issues', duration: 10 * 60 },
+            { name: 'Tasks', duration: 10 * 60 },
+            { name: 'Scorecard', duration: 30 * 60 }
+        ];
+
+        let currentSectionIndex = 0;
+        let timeRemaining = sections[0].duration;
+        let elapsedTime = 0;
+        let totalElapsedTime = 0;
+        let timerInterval = null;
+        let isRunning = false;
+
+        const sectionNameEl = document.getElementById('sectionName');
+        const countdownEl = document.getElementById('countdown');
+        const elapsedEl = document.getElementById('elapsed');
+        const totalElapsedEl = document.getElementById('totalElapsed');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const completedEl = document.getElementById('completed');
+
+        function formatTime(seconds) {
+            const isNegative = seconds < 0;
+            const absSeconds = Math.abs(seconds);
+            const mins = Math.floor(absSeconds / 60);
+            const secs = absSeconds % 60;
+            const sign = isNegative ? '-' : '';
+            return `${sign}${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            countdownEl.textContent = formatTime(timeRemaining);
+            elapsedEl.textContent = `Elapsed: ${formatTime(elapsedTime)}`;
+            totalElapsedEl.textContent = `Total: ${formatTime(totalElapsedTime)}`;
+            
+            if (timeRemaining < 0) {
+                countdownEl.classList.remove('normal');
+                countdownEl.classList.add('overtime');
+            } else {
+                countdownEl.classList.remove('overtime');
+                countdownEl.classList.add('normal');
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                elapsedTime++;
+                totalElapsedTime++;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            isRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function loadSection(index) {
+            if (index >= sections.length) {
+                stopTimer();
+                completedEl.style.display = 'block';
+                nextBtn.disabled = true;
+                startPauseBtn.disabled = true;
+                return;
+            }
+
+            currentSectionIndex = index;
+            const section = sections[index];
+            sectionNameEl.textContent = section.name;
+            timeRemaining = section.duration;
+            elapsedTime = 0;
+            updateDisplay();
+        }
+
+        startPauseBtn.addEventListener('click', () => {
+            if (isRunning) {
+                stopTimer();
+                startPauseBtn.textContent = 'Start';
+            } else {
+                startTimer();
+                startPauseBtn.textContent = 'Pause';
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            stopTimer();
+            loadSection(currentSectionIndex + 1);
+            if (currentSectionIndex < sections.length) {
+                startTimer();
+                startPauseBtn.textContent = 'Pause';
+            } else {
+                // Last section completed - don't auto-start
+                startPauseBtn.textContent = 'Start';
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            stopTimer();
+            currentSectionIndex = 0;
+            totalElapsedTime = 0;
+            completedEl.style.display = 'none';
+            nextBtn.disabled = false;
+            startPauseBtn.disabled = false;
+            startPauseBtn.textContent = 'Start';
+            loadSection(0);
+        });
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
