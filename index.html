@@ -20,29 +20,17 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            transition: color 0.3s ease;
-        }
-
-        body.dark-mode {
-            color: #ffffff;
         }
 
         .container {
-            background: #ffffff;
-            border: 1px solid #e5e5e5;
+            background: #262624;
+            border: 1px solid #404040;
             border-radius: 12px;
             padding: 25px 35px;
-            max-width: 600px;
+            max-width: 800px;
             width: 100%;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s ease, border-color 0.3s ease;
             position: relative;
-        }
-
-        body.dark-mode .container {
-            background: #2a2a2a;
-            border-color: #404040;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         .header {
@@ -54,27 +42,9 @@
         .section-name {
             font-size: 22px;
             font-weight: 600;
-            color: #22c55e;
+            color: #2D9964;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: transparent;
-            border: none;
-            border-radius: 50%;
-            padding: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: opacity 0.2s ease;
-            opacity: 0.4;
-        }
-
-        .theme-toggle:hover {
-            opacity: 1;
         }
 
         .main-content {
@@ -93,26 +63,23 @@
             font-variant-numeric: tabular-nums;
             margin-bottom: 6px;
             transition: color 0.3s ease;
+            color: #ffffff;
         }
 
         .countdown.normal {
-            color: #22c55e;
+            color: #2D9964;
         }
 
         .countdown.overtime {
-            color: #ef4444;
+            color: #CD4A45;
         }
 
         .time-info {
             display: flex;
             gap: 20px;
             font-size: 14px;
-            color: #666;
-            font-variant-numeric: tabular-nums;
-        }
-
-        body.dark-mode .time-info {
             color: #9ca3af;
+            font-variant-numeric: tabular-nums;
         }
 
         .controls {
@@ -132,58 +99,57 @@
             transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .start-pause-btn {
-            background: #22c55e;
+            background: #CD4A45;
             color: #ffffff;
         }
 
         .start-pause-btn:hover {
-            background: #16a34a;
+            background: #b33f3b;
         }
 
         .next-btn {
-            background: #22c55e;
+            background: #2D9964;
             color: #ffffff;
         }
 
         .next-btn:hover {
-            background: #16a34a;
+            background: #257d52;
         }
 
         .reset-btn {
-            background: #e5e5e5;
-            color: #1a1a1a;
-        }
-
-        body.dark-mode .reset-btn {
             background: #404040;
             color: #ffffff;
         }
 
         .reset-btn:hover {
-            background: #d4d4d4;
-        }
-
-        body.dark-mode .reset-btn:hover {
             background: #525252;
         }
 
         .completed {
             text-align: center;
             font-size: 16px;
-            color: #22c55e;
+            color: #2D9964;
             margin-top: 12px;
             font-weight: 600;
+        }
+
+        .icon {
+            width: 14px;
+            height: 14px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button class="theme-toggle" id="themeToggle">🌙</button>
         <div class="header">
-            <div class="section-name" id="sectionName">Rocks</div>
+            <div class="section-name" id="sectionName">SEGUE</div>
         </div>
         <div class="main-content">
             <div class="timer-display">
@@ -194,9 +160,24 @@
                 </div>
             </div>
             <div class="controls">
-                <button class="start-pause-btn" id="startPauseBtn">Start</button>
-                <button class="next-btn" id="nextBtn">Next</button>
-                <button class="reset-btn" id="resetBtn">Reset</button>
+                <button class="start-pause-btn" id="startPauseBtn">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    Start
+                </button>
+                <button class="next-btn" id="nextBtn">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                    Next
+                </button>
+                <button class="reset-btn" id="resetBtn">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Reset
+                </button>
             </div>
         </div>
         <div class="completed" id="completed" style="display: none;">All Sections Complete! 🎉</div>
@@ -204,11 +185,14 @@
 
     <script>
         const sections = [
-            { name: 'Rocks', duration: 5 * 60 },
-            { name: 'Headlines', duration: 2 * 60 },
-            { name: 'Scorecard', duration: 30 * 60 },
-              { name: 'Tasks', duration: 10 * 60 },
-            { name: 'Issues', duration: 10 * 60 }
+            { name: 'SEGUE', duration: 5 * 60 },
+            { name: 'DATA', duration: 5 * 60 },
+            { name: 'ROCK', duration: 5 * 60 },
+            { name: 'REVIEW', duration: 5 * 60 },
+            { name: 'HEADLINES', duration: 5 * 60 },
+            { name: 'TO-DO LIST', duration: 5 * 60 },
+            { name: 'ISSUES (IDS)', duration: 60 * 60 },
+            { name: 'CONCLUDE', duration: 5 * 60 }
         ];
 
         let currentSectionIndex = 0;
@@ -226,7 +210,6 @@
         const nextBtn = document.getElementById('nextBtn');
         const resetBtn = document.getElementById('resetBtn');
         const completedEl = document.getElementById('completed');
-        const themeToggle = document.getElementById('themeToggle');
 
         function formatTime(seconds) {
             const isNegative = seconds < 0;
@@ -289,12 +272,23 @@
         }
 
         startPauseBtn.addEventListener('click', () => {
+            const iconSvg = startPauseBtn.querySelector('svg');
             if (isRunning) {
                 stopTimer();
-                startPauseBtn.textContent = 'Start';
+                startPauseBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    Start
+                `;
             } else {
                 startTimer();
-                startPauseBtn.textContent = 'Pause';
+                startPauseBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Pause
+                `;
             }
         });
 
@@ -303,9 +297,19 @@
             loadSection(currentSectionIndex + 1);
             if (currentSectionIndex < sections.length) {
                 startTimer();
-                startPauseBtn.textContent = 'Pause';
+                startPauseBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Pause
+                `;
             } else {
-                startPauseBtn.textContent = 'Start';
+                startPauseBtn.innerHTML = `
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                    Start
+                `;
             }
         });
 
@@ -316,17 +320,13 @@
             completedEl.style.display = 'none';
             nextBtn.disabled = false;
             startPauseBtn.disabled = false;
-            startPauseBtn.textContent = 'Start';
+            startPauseBtn.innerHTML = `
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                </svg>
+                Start
+            `;
             loadSection(0);
-        });
-
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                themeToggle.textContent = '☀️';
-            } else {
-                themeToggle.textContent = '🌙';
-            }
         });
 
         // Initialize display
